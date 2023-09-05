@@ -1,0 +1,192 @@
+paths:
+    /products:
+        get:
+            summary: Obtiene todos los productos
+            tags:
+                - Products
+            responses:
+                "200":
+                    description: Los productos se obtuvieron correctamente de la Base de datos
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: '#/components/schemas/Product'
+                "401":
+                    description: Usuario no autorizado.
+                "500":
+                    description: Error interno del servidor, no se pudieron obtener los productos.
+        post:
+            summary: Inserta un nuevo producto en la base de datos.
+            tags:
+                - Products
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            items:
+                                $ref: '#/components/schemas/Product'
+            responses:
+                "200":
+                    description: El producto se agrego correctamente a la base de datos.
+                "401":
+                    description: Usuario no autorizado.
+                "403":
+                    description: No tiene permisos para realizar la acción.
+                "500":
+                    description: Error interno del servidor, no se pudieron obtener los productos.
+
+    /products/{pid}:
+        get:
+            summary: Obtiene un producto por su ID
+            tags:
+                - Products
+            parameters:
+                -   name: pid
+                    in: path
+                    required: true
+                    description: Id del producto que se desea consultar.                
+                    schema:
+                        type: string
+            responses:
+                "200":
+                    description: El producto se obtuvo de manera exitosa.
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: '#/components/schemas/Product'
+                "401":
+                    description: Usuario no autorizado.
+                "500":
+                    description: Error interno del servidor, no se pudo obtener el producto.
+        put:
+            summary: Actualiza un producto por su ID
+            tags:
+                - Products
+            parameters:
+                -   name: pid
+                    in: path
+                    required: true
+                    description: Id del producto que desea obtener.
+                    schema:
+                        type: string
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#components/requestBodies/addProduct'
+            responses: 
+                "200":
+                    description: El producto fue actualizado correctamente.
+                "401":
+                    description: Usuario no autorizado.
+                "500":
+                    description: Hubo un error, el producto no pudo ser actualizado.
+    
+        delete:
+            summary: Elimina un produtco
+            tags:
+                - Products
+            parameters:
+                -   name: pid
+                    in: path
+                    required: true
+                    description: Id del producto que desea eliminar.
+                    schema:
+                        $type: string
+            responses:
+                "200":
+                    description: El producto fue eliminado correctamente.
+                "401":
+                    description: Usuario no autorizado.
+                "500":
+                    description: No se pudo eliminar el producto.
+components: 
+  schemas: 
+    Product:
+      type: object
+      properties: 
+        _id:
+          type: string
+          description: Id autogenerado por MongoDb del producto.
+        title:
+          type: string
+          description: Titulo del producto.
+        description:
+          type: string
+          description: Descripcion del producto.
+        price:
+          type: number
+          description: Precio del producto.
+        thumbnail:
+          type: string
+          description: Nombre/s de las imagenes del producto.
+        code:
+          type: string
+          description: Codigo del producto, no puede repetirse.
+        stock:
+          type: number
+          description: Stock del producto.
+        category:
+          type: string
+          description: Categoria a la que pertenece el producto.
+        status:
+          type: boolean
+          description: Estado del producto.
+        owner:
+          type: string
+          description: ObjectId del usuario creador del producto.
+      example: 
+        _id: ObjectId("64bfc47a329120e07ce7d36")
+        title: Crema Antiage
+        description: Loreal con microesferas
+        price: 1000
+        thumbnail: LorealAntieage.jpg
+        code: c00001
+        stock: 15
+        category: cremas
+        status: true
+        owner: ObjectId("64e4b0393389cdc4c97cbf65")
+        
+  requestBodies:
+    addProduct:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Titulo del producto.
+        description:
+          type: string
+          description: Descripcion del producto.
+        code:
+          type: number
+          description: El code del producto, este campo es único y no puede repetirse
+        price:
+          type: number
+          description: El precio del producto
+        status:
+          type: string
+          description: Determinara el estado del producto
+        stock:
+          type: number
+          description: Stock disponible del producto
+        category:
+          type: string
+          description: Categoria a la que pertenece el producto
+        thumbnail:
+          type: string
+          description: link IMG del producto
+      example: 
+        title: Producto
+        description: Esta es la descripcion del producto
+        code:  553
+        price: 1000
+        status: 'true'
+        stock: 15
+        category: cremas
+        thumbnail: linkDeEjemplo
